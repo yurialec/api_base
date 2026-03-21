@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Resources\UserResource;
 use App\Services\UserService;
 
 class UserController extends Controller
@@ -27,7 +26,6 @@ class UserController extends Controller
             }
 
             return ApiResponse::success($data);
-
         } catch (\Throwable $e) {
             return ApiResponse::error('Erro interno no servidor', null, 500);
         }
@@ -65,10 +63,11 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        $this->service->delete($id);
-
-        return response()->json([
-            'message' => 'Registro removido com sucesso.'
-        ]);
+        try {
+            $this->service->delete($id);
+            return ApiResponse::success('Registro removido com sucesso.');
+        } catch (\Throwable $e) {
+            return ApiResponse::error('Erro ao remover registro', null, 500);
+        }
     }
 }
